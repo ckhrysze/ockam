@@ -1,8 +1,5 @@
 ["setup.exs", "puncher.exs"] |> Enum.map(&Code.require_file/1)
 
-# Usage:  elixir 01-puncher.exs my_name their_name rendezvous_host:port
-# Assumes rendezvous host is already running
-
 [my_name, their_name, addr] = System.argv()
 [rendezvous_host, port_s] = String.split(addr, ":")
 {rendezvous_port, ""} = Integer.parse(port_s)
@@ -18,8 +15,7 @@ rendezvous_address = Ockam.Transport.UDPAddress.new(rendezvous_host, rendezvous_
     }
   )
 
-puncher = Ockam.Node.whereis(my_name)
-
+# Port 0 will cause the OS to assign a random port
 {:ok, _udp} = Ockam.Transport.UDP.start(port: 0)
 
 Ockam.Node.whereis(my_name)

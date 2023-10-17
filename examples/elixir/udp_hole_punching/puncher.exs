@@ -1,4 +1,8 @@
 defmodule Puncher do
+  @moduledoc """
+  An Ockam Worker that acts as a client in a UDP hole punching scenario.
+  """
+
   use Ockam.Worker
 
   require Logger
@@ -9,6 +13,8 @@ defmodule Puncher do
 
   @impl true
   def handle_call(:ping_rendezvous_server, _, state) do
+    Logger.debug("Ensure rendezvous server is listening")
+
     Ockam.Router.route(%{
       payload: "ping",
       onward_route: [state.attributes.rendezvous_address, @rendezvous_node],
@@ -20,7 +26,7 @@ defmodule Puncher do
 
   @impl true
   def handle_message(%{payload: "pong"} = message, state) do
-    Logger.info("Rendezvous server is up, request address")
+    Logger.debug("Rendezvous server is up, request address")
 
     Router.route(%{
       payload: "my address",
@@ -32,7 +38,7 @@ defmodule Puncher do
   end
 
   def handle_message(%{payload: "address: " <> address} = message, state) do
-    Logger.info("Received address: #{inspect(address)}")
+    Logger.debug("Received address: #{inspect(address)}")
 
     state = put_in(state, [:attributes, :external_address], address)
 
@@ -50,7 +56,7 @@ defmodule Puncher do
   end
 
   def handle_message(%{payload: "connected"} = message, state) do
-    Logger.info("Received connected message")
+    Logger.debug("Received connected message")
 
     Router.route(%{
       payload: "hello",
@@ -70,7 +76,7 @@ defmodule Puncher do
   end
 
   def handle_message(message, %{address: address} = state) do
-    Logger.warning("Unknown puncher message #{inspect(message)}}")
+    Logger.warning("Unknown message #{inspect(message)}}")
 
     {:ok, state}
   end
