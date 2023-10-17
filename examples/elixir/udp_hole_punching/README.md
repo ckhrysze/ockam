@@ -14,6 +14,7 @@ each node with the other's external facing address.
 ```
 elixir 01-rendezvous.exs
 ```
+
 - Start two (or more) clients (punchers)
 ```
 elixir 01-puncher.exs my_name their_name rendezvous_host:port
